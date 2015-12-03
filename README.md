@@ -25,13 +25,13 @@ The type object part deals with types as types. The principal functions are
 
 **typep** _object type_ => _generalized boolean_
 
-As CL typep, but takes a type object rather than a specifier (and thus loses the &environment), and is a generic function.
+As CL **typep**, but takes a type object rather than a specifier (and thus loses the <tt>&environment</tt>), and is a generic function.
 
 You will probably want to define a typep for all your type-classes, except in the rare case that you want to subclass an existing type-class without changing its membership, and by "rare" I mean "I don't know why you'd ever do that".
 
 **subtypep** _type1 type2_ => _subtype-p, valid_p_
 
-As CL subtypep, but again without parsing/an environment, and a generic function.
+As CL **subtypep**, but again without parsing/an environment, and a generic function.
 
 There's a default method on subtypep that returns NIL NIL, i.e. uncertainty. Therefore, you can just define subtypep for your type-classes as relate to the few other type-classes you care about for your application, while leaving the rest undefined. It's incremental! Grow as you go, man.
 
@@ -39,7 +39,7 @@ Importantly, there are no other assumptions involved with this function. You cou
 
 The major exceptions are the "universe" types, T and NIL, and the "logical" types, AND OR NOT. (subtypep type t) is assumed true, etc., and if (subtypep type type), (subtypep type (or type integer)), and so on. This will bite you with the hypothetical CONS INTEGER subtype mentioned, because (and cons integer) will collapse to NIL. You can override this by defining more specific methods, but again, weird thing to do.
 
-As a generic function, it uses a special method combination called tri/combine. Tri/combine is a macro that takes several forms that return two values each which are to be interpreted as subtypep results are - that is, T T means true, NIL T means false, NIL NIL means unknown - and returns the first that returns true or false, or NIL NIL if there are none.
+As a generic function, it uses a special method combination called **tri/combine**. Tri/combine is a macro that takes several forms that return two values each which are to be interpreted as subtypep results are - that is, T T means true, NIL T means false, NIL NIL means unknown - and returns the first that returns true or false, or NIL NIL if there are none.
 
 Use of method combinations in CL is pretty rare, so I'll explain this in some detail.
 
@@ -47,7 +47,7 @@ This is a "short form" method combination, as described in [clhs define-method-c
 
 If you don't want to think about it, here's the really short version: write methods with "tri/combine", like so:
 
-(defmethod subtypep tri/combine ((t1 my-type) (t2 my-other-type)) ...)
+   (defmethod subtypep tri/combine ((t1 my-type) (t2 my-other-type)) ...)
 
 and don't use call-next-method and next-method-p. If you don't have a result, or want to punt to other methods, just return NIL NIL.
 
@@ -63,7 +63,7 @@ Determines if two types are equal based on their subtyping: a ≤ b and b ≥ a 
 
 There are also functions for dealing with types as sets - essentially, AND, OR, and NOT types. Default behavior is provided, so that (subtypep (and foo baz) foo) works as you'd expect if (subtypep foo foo), but it is also possible to collapse combinations into less generic type-objects. For example, if you were writing your own interval arithmetic, you would probably want (or (integer 3 7) (integer 5 9)) to become (integer 3 9). These functions are
 
-**conjoin/2** _type1 type2_ => _conjoined-type_
+**conjoin/2** _type1 type2_ => _conjoined-type_  
 **disjoin/2** _type1 type2_ => _disjoined-type_
 
 These carry out AND and OR, respectively. The default method makes a generic conjunction or disjunction type-object.
@@ -79,7 +79,7 @@ This part of the library converts type specifiers into type-objects and back. As
 
 ### Main entry points
 
-**parse-type** _type-specifier <tt>&optional</tt> environment_ => _type-object_
+**parse-type** _type-specifier_ <tt>&optional</tt> _environment_ => _type-object_
 
 Parses a type specifier into a reified type, according to the names in _environment_. As with all CL functions, a NIL environment means the global environment. The "parsing" works analogously to CL evaluation:
 
@@ -89,11 +89,11 @@ Parses a type specifier into a reified type, according to the names in _environm
 
 Methods of defining all these things are below.
 
-**typexpand** _type-specifier <tt>&optional</tt> environment_ => _type-specifier, expanded-p_
+**typexpand** _type-specifier_ <tt>&optional</tt> _environment_ => _type-specifier, expanded-p_
 
 Analogous to **macroexpand**. Expands both symbol and functional macros. Second value is true if an expansion was carried out.
 
-**typexpand-1** _type-specifier <tt>&optional</tt> environment_ => _type-specifier, expanded-p_
+**typexpand-1** _type-specifier_ <tt>&optional</tt> _environment_ => _type-specifier, expanded-p_
 
 Analogous to **macroexpand-1**.
 
@@ -107,8 +107,8 @@ There are four functions to define type parses. Return values of all four are un
 
 If these don't work out for you, you can set things directly: check "generic access" below.
 
-**deftype-function** _name lambda-list <tt>&body</tt> body_
-**deftype-macro** _name lambda-list <tt>&body</tt> body_
+**deftype-function** _name lambda-list_ <tt>&body</tt> _body_  
+**deftype-macro** _name lambda-list_ <tt>&body</tt> _body_
 
 Define type specifier functions and macros, respectively, as defined above.
 
@@ -123,23 +123,23 @@ Define type specifier variables and symbol-macros.
 
 As an example use of these four, here's the definition of CONS type parsing:
 
-(deftype-function cons (&optional car cdr)
-  (make-instance 'cons-type :car (or car _<t>_) :cdr (or cdr _<t>_)))
-(deftype-symbol-macro cons (cons t t))
+    (deftype-function cons (&optional car cdr)
+      (make-instance 'cons-type :car (or car _<t>_) :cdr (or cdr _<t>_)))
+    (deftype-symbol-macro cons (cons t t))
 
 ### Generic access (and alternate environments)
 
 If you're using your own environments, you sly dog you, there are generic functions available to define your own access:
 
-**specifier-symbol-macro** _spec env_ => _macro-function__
-(<tt>setf</tt> (**specifier-symbol-macro** _spec env_) _macro-function_)
-**specifier-macro** _spec env_ => _macro-function_
-(<tt>setf</tt> (**specifier-macro** _spec env_) _macro-function_)
-**specifier-variable** _spec env_ => _type-object_
-(<tt>setf</tt> (**specifier-variable* _spec env_) _type-object_)
-**specifier-function** _spec env_ => _function_
-(<tt>setf</tt> (**specifier-function* _spec env_) _function_)
-**specifier-special** _spec env_ => _special-function_
+**specifier-symbol-macro** _spec env_ => _macro-function__  
+(<tt>setf</tt> (**specifier-symbol-macro** _spec env_) _macro-function_)  
+**specifier-macro** _spec env_ => _macro-function_  
+(<tt>setf</tt> (**specifier-macro** _spec env_) _macro-function_)  
+**specifier-variable** _spec env_ => _type-object_  
+(<tt>setf</tt> (**specifier-variable* _spec env_) _type-object_)  
+**specifier-function** _spec env_ => _function_  
+(<tt>setf</tt> (**specifier-function* _spec env_) _function_)  
+**specifier-special** _spec env_ => _special-function_  
 (<tt>setf</tt> (**specifier-special** _spec env_) _special-function_)
 
 where
