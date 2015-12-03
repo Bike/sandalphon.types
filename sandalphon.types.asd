@@ -17,7 +17,8 @@
 		      :depends-on ("generics" "parse" "unparse"
 					      "package"))
 	       (:file "cons"
-		      :depends-on ("generics" "parse" "unparse"
+		      :depends-on ("generics" "universe"
+					      "parse" "unparse"
 					      "package"))
 	       (:file "real"
 		      :depends-on ("generics" "universe"

@@ -10,26 +10,35 @@
        (typep (cdr obj) (cons-type-cdr type))))
 
 (defmethod subtypep tri/combine ((t1 cons-type) (t2 cons-type))
-  (tri-and (subtypep (cons-type-car t1) (cons-type-car t2))
+  (tri/and (subtypep (cons-type-car t1) (cons-type-car t2))
 	   (subtypep (cons-type-cdr t1) (cons-type-cdr t2))))
 
+(defun type-cons (car cdr)
+  "Make a cons type, but can sometimes return NIL, i.e. if either argument is NIL."
+  (if (or (cl:typep car 'bottom-type) (cl:typep cdr 'bottom-type))
+      *the-type-nil*
+      (make-instance 'cons-type :car car :cdr cdr)))
+
 (defmethod conjoin/2 ((t1 cons-type) (t2 cons-type))
-  (make-instance 'cons-type
-		 :car (conjoin/2 (cons-type-car t1)
-				 (cons-type-car t2))
-		 :cdr (conjoin/2 (cons-type-cdr t1)
-				 (cons-type-cdr t2))))
+  (type-cons (conjoin/2 (cons-type-car t1) (cons-type-car t2))
+	     (conjoin/2 (cons-type-cdr t1) (cons-type-cdr t2))))
 (defmethod disjoin/2 ((t1 cons-type) (t2 cons-type))
-  (make-instance 'cons-type
-		 :car (disjoin/2 (cons-type-car t1)
-				 (cons-type-car t2))
-		 :cdr (disjoin/2 (cons-type-cdr t1)
-				 (cons-type-cdr t2))))
+  ;; can't really get nil here, but might as well be consistent.
+  (type-cons (disjoin/2 (cons-type-car t1) (cons-type-car t2))
+	     (disjoin/2 (cons-type-cdr t1) (cons-type-cdr t2))))
+
+(defmethod negate ((type cons-type))
+  (if (and (eq (cons-type-car type) *the-type-t*)
+	   (eq (cons-type-cdr type) *the-type-t*))
+      (call-next-method) ; avoid recurse
+      (disjoin (negate (type-cons *the-type-t* *the-type-t*))
+	       (type-cons (negate (cons-type-car type))
+			  (cons-type-cdr type))
+	       (type-cons (cons-type-car type)
+			  (negate (cons-type-cdr type))))))
 
 (deftype-function cons (&optional car cdr)
-  (make-instance 'cons-type
-		 :car (or car *the-type-t*)
-		 :cdr (or cdr *the-type-t*)))
+  (type-cons (or car *the-type-t*) (or cdr *the-type-t*)))
 
 (deftype-symbol-macro cons (cons t t))
 
