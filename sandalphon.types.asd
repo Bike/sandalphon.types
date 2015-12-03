@@ -10,6 +10,8 @@
 	       (:file "trivalent" :depends-on ("package"))
 	       (:file "generics"
 		      :depends-on ("trivalent" "package"))
+	       (:file "CLOS"
+		      :depends-on ("generics" "package"))
 	       (:file "universe"
 		      :depends-on ("generics" "parse" "unparse"
 					      "package"))
