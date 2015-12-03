@@ -42,6 +42,7 @@
 	(if (rest spec)
 	    (make-instance 'member-type :objs (rest spec))
 	    *the-type-nil*)))
+(deftype-symbol-macro null (eql nil))
 
 (defmethod unparse ((type member-type))
   (list* 'member (member-type-objects type)))

@@ -41,6 +41,8 @@
   (type-cons (or car *the-type-t*) (or cdr *the-type-t*)))
 
 (deftype-symbol-macro cons (cons t t))
+(deftype-symbol-macro atom (not cons))
+(deftype-symbol-macro list (or cons null))
 
 (defmethod unparse ((type cons-type))
   (with-slots (car cdr) type
