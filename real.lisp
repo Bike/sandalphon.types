@@ -121,8 +121,8 @@
 		 (multiple-value-bind (newl newlep)
 		     (greatest-lower-bound l1 lep1 l2 lep2)
 		   ;; make sure our intersection isn't disjoint.
-		   (cond ((> newl newu) *the-type-nil*)
-			 ((= newl newu)
+		   (cond ((and newl newu (> newl newu)) *the-type-nil*)
+			 ((and newl newu (= newl newu))
 			  (if (or newuep newlep)
 			      *the-type-nil*
 			      (make-instance 'eql-type :obj newl)))
