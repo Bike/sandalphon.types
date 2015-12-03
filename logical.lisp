@@ -55,11 +55,11 @@
   ;; (&Bn)' ⊆ A'
   ;; (|Bn') ⊆ A'
   ;; |(Bn' ⊆ A') ; fuck. fuck it, fuck this
-  (tri-every (curry #'subtypep t1)
+  (tri/every (curry #'subtypep t1)
 	     (combination-type-components t2)))
 
 (defmethod subtypep tri/combine ((t1 disjunction-type) t2)
-  (if (tri-notevery (rcurry #'subtypep t2)
+  (if (tri/notevery (rcurry #'subtypep t2)
 		    (combination-type-components t1))
       ;; some subset of t1 is not a subtype of t2
       (values nil t)
@@ -93,11 +93,21 @@
   (make-instance
    'conjunction-type
    :components (cons t2 (combination-type-components t1))))
+;; these are to force (and (and ...) t/nil) to reduce.
+(defmethod conjoin/2 ((t1 conjunction-type) (t2 top-type)) t1)
+(defmethod conjoin/2 ((t1 top-type) (t2 conjunction-type)) t2)
+(defmethod conjoin/2 ((t1 conjunction-type) (t2 bottom-type)) t2)
+(defmethod conjoin/2 ((t1 bottom-type) (t2 conjunction-type)) t1)
 
 (defmethod-commutative disjoin/2 ((t1 disjunction-type) t2)
   (make-instance
    'disjunction-type
    :components (cons t2 (combination-type-components t1))))
+;; similarly,
+(defmethod disjoin/2 ((t1 disjunction-type) (t2 top-type)) t2)
+(defmethod disjoin/2 ((t1 top-type) (t2 disjunction-type)) t1)
+(defmethod disjoin/2 ((t1 disjunction-type) (t2 bottom-type)) t1)
+(defmethod disjoin/2 ((t1 bottom-type) (t2 disjunction-type)) t2)
 
 (deftype-function and (&rest types) (apply #'conjoin types))
 (deftype-function or (&rest types) (apply #'disjoin types))
@@ -127,3 +137,40 @@
 
 (defmethod unparse ((type negation-type))
   (list 'not (unparse (negation-type-type type))))
+
+;;; REAL BOOLEAN ALGEBRA SHIT UP NOW
+
+;;; Basically the priorities are as follows:
+;;; 1) Avoid negation-types as much as possible. When they're needed,
+;;;    they should be as low in trees as possible.
+;;; 2) Try to get a disjunctive normal form: OR of ANDs.
+
+;; De Morgan's laws
+(defmethod negate ((type conjunction-type))
+  (apply #'disjoin
+	 (mapcar #'negate (combination-type-components type))))
+(defmethod negate ((type disjunction-type))
+  (apply #'conjoin
+	 (mapcar #'negate (combination-type-components type))))
+
+;; distribute AND over OR
+(defmethod-commutative conjoin/2 ((t1 disjunction-type) t2)
+  (apply #'disjoin
+	 (mapcar (lambda (type) (conjoin/2 t2 type))
+		 (combination-type-components t1))))
+
+;; dunno what this identity's called if anything but it's easy to prove
+;; A&~(A|B) = A&~A&B = 0
+;; also takes care of A&~A
+(defmethod-commutative conjoin/2 ((t1 negation-type) t2)
+  (if (subtypep t2 (negation-type-type t1))
+      *the-type-nil*
+      (call-next-method)))
+
+;; ~A|(A|B) = ~A|A|B = T
+;; (or (not (cons integer)) cons)
+;; also takes care of A|~A
+(defmethod-commutative disjoin/2 ((t1 negation-type) t2)
+  (if (subtypep (negation-type-type t1) t2)
+      *the-type-t*
+      (call-next-method)))

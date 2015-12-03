@@ -28,6 +28,6 @@
 				   "generics" "parse" "unparse"
 				   "package"))
 	       (:file "logical"
-		      :depends-on ("generics" "parse"
-					      "unparse"
+		      :depends-on ("generics" "universe"
+					      "parse" "unparse"
 					      "package"))))
