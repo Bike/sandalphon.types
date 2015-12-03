@@ -84,7 +84,7 @@ This part of the library converts type specifiers into type-objects and back. As
 Parses a type specifier into a reified type, according to the names in _environment_. As with all CL functions, a NIL environment means the global environment. The "parsing" works analogously to CL evaluation:
 
 1. The type-specifier is macroexpanded in environment, as by **typexpand**.
-2. If the result is a symbol, it is looked up as a variable. The value of the binding is returned. If there is no binding, an error is signaled.
+2. If the result is a symbol, it is looked up as a variable. The value of the binding is returned. If there is no binding, it is looked up as a class as by **find-class**, and if there is a class that is returned. Otherwise, an error is signaled.
 3. If the result is a cons, its car, which must be a symbol, is looked up first as a special operator and then as a function. If it is a special operator, the bound type-specifier-special-operator function receives the whole specifier and the environment as arguments, and should return a type object. If it is a function, the cdr of the specifier must be a proper list; **parse-type** is applied to each element, and then the type-specifier-function receives this list as arguments (i.e. as by **apply**).
 
 Methods of defining all these things are below.

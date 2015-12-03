@@ -1,5 +1,13 @@
 (in-package #:sandalphon.types)
 
+(defmacro tri/if (condition ontrue onfalse onunknown)
+  (let ((truth (gensym "TRUTH"))
+	(certainty (gensym "CERTAINTY")))
+    `(multiple-value-bind (,truth ,certainty) ,condition
+       (if ,certainty
+	   (if ,truth ,ontrue ,onfalse)
+	   ,onunknown))))
+
 (defmacro tri/combine (&rest forms)
   "Evaluate FORMS from left to right until one is certain, and return that."
   (cond ((endp forms) (values nil nil)) ; whatever
@@ -49,7 +57,7 @@
 	       (if certainty
 		   (unless value
 		     (return-from tri/notevery (values t t)))
-		   (setf overall/certainty nil)))))
+		   (setf overall-certainty nil)))))
       (declare (inline map-me))
       (apply #'map nil #'map-me first-seq more-seqs)
       (values nil overall-certainty))))

@@ -4,6 +4,7 @@
   (let ((specifier (typexpand specifier environment)))
     (etypecase specifier
       (symbol (or (specifier-variable specifier environment)
+		  (find-class specifier nil environment)
 		  (error "~a is not a defined type" specifier)))
       (cons (let ((special
 		   (specifier-special (car specifier)

@@ -32,4 +32,9 @@
 	       (:file "logical"
 		      :depends-on ("generics" "universe"
 					      "parse" "unparse"
-					      "package"))))
+					      "package"))
+	       (:file "interrelate"
+		      :depends-on ("generics" "cons" "real"
+					      "eql-member"
+					      "universe" "array"
+					      "trivalent" "package"))))
