@@ -195,13 +195,13 @@
 				     :class class
 				     :lower upper :lep (not uep)
 				     :upper nil :uep nil)
-		      *the-type-t*))
+		      *the-type-nil*))
 	  (dntype (if lower
 		      (make-instance 'interval-type
 				     :class class
 				     :lower nil :lep nil
 				     :upper lower :uep (not lep))
-		      *the-type-t*)))
+		      *the-type-nil*)))
       (if (and (not upper) (not lower))
 	  ;; (not integer); avoid infinite regress by punting
 	  (call-next-method)
