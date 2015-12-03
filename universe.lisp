@@ -29,6 +29,9 @@
 (defmethod-commutative disjoin/2 ((t1 bottom-type) t2) t2)
 (defmethod-commutative disjoin/2 ((t1 top-type) t2) t1)
 
+(defmethod negate ((type top-type)) *the-type-nil*)
+(defmethod negate ((type bottom-type)) *the-type-t*)
+
 ;; defconstant? something?
 (defparameter *the-type-t* (make-instance 'top-type))
 (defparameter *the-type-nil* (make-instance 'bottom-type))
