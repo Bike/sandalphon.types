@@ -167,6 +167,8 @@ At the moment the following are defined:
 * CONS
 * REAL and subtypes, including sensible interval arithmetic
 * EQL, MEMBER
+* FUNCTION
+* SATISFIES
 
 But it needs work.
 
