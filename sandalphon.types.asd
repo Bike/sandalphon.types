@@ -5,7 +5,7 @@
   :version "0.1"
   :depends-on (#:alexandria)
   :components ((:file "package")
-	       (:file "parse" :depends-on ("package"))
+	       (:file "parse" :depends-on ("generics" "package"))
 	       (:file "unparse" :depends-on ("generics" "package"))
 	       (:file "trivalent" :depends-on ("package"))
 	       (:file "generics"
