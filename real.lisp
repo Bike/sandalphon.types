@@ -234,8 +234,12 @@
 (deftype-symbol-macro double-float (double-float))
 (deftype-symbol-macro long-float (long-float))
 (deftype-symbol-macro integer (integer))
-;; note that (ratio) is not in CL, but this is internal so w/e
-(deftype-symbol-macro ratio (ratio))
+;; (ratio) is not in CL so we do this. it's eh.
+(deftype-variable ratio
+    (make-instance 'interval-type
+		   :class 'ratio
+		   :lower nil :lep nil
+		   :upper nil :uep nil))
 (deftype-symbol-macro rational (rational))
 (deftype-symbol-macro real (real))
 
