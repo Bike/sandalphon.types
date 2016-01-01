@@ -29,6 +29,9 @@
 		      :depends-on ("universe"
 				   "generics" "parse" "unparse"
 				   "package"))
+	       (:file "satisfies"
+		      :depends-on ("generics" "parse" "unparse"
+					      "package"))
 	       (:file "logical"
 		      :depends-on ("generics" "universe"
 					      "parse" "unparse"
