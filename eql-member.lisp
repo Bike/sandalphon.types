@@ -36,6 +36,13 @@
 		      (member-type-objects t2))))
     (make-instance 'member-type :objs union)))
 
+(defmethod-commutative conjoin/2 ((t1 member-type) t2)
+  (if (notany (lambda (o) (typep o t2))
+	      (member-type-objects t1))
+      *the-type-nil*
+      ;; better safe than sorry
+      (call-next-method)))
+
 (setf (assoc-value *global-type-environment-specials* 'eql)
       (lambda (spec env)
 	(declare (ignore env))
@@ -69,6 +76,11 @@
       (make-instance 'member-type
 		     :objs (list (eql-type-object t1)
 				 (eql-type-object t2)))))
+
+(defmethod-commutative conjoin/2 ((t1 eql-type) t2)
+  (if (typep (eql-type-object t1) t2)
+      t1
+      *the-type-nil*))
 
 (setf (assoc-value *global-type-environment-specials* 'eql)
       (lambda (spec env)
