@@ -109,16 +109,6 @@
 (defmethod disjoin/2 ((t1 disjunction-type) (t2 bottom-type)) t1)
 (defmethod disjoin/2 ((t1 bottom-type) (t2 disjunction-type)) t2)
 
-(deftype-function and (&rest types) (apply #'conjoin types))
-(deftype-function or (&rest types) (apply #'disjoin types))
-
-(defmethod unparse ((type conjunction-type))
-  (list* 'and (mapcar #'unparse
-		      (combination-type-components type))))
-(defmethod unparse ((type disjunction-type))
-  (list* 'or (mapcar #'unparse
-		     (combination-type-components type))))
-
 (defclass negation-type (type)
   ((negated :initarg :neg :accessor negation-type-type)))
 
@@ -131,12 +121,6 @@
 
 (defmethod negate (type)
   (make-instance 'negation-type :neg type))
-
-(deftype-function not (type)
-  (negate type))
-
-(defmethod unparse ((type negation-type))
-  (list 'not (unparse (negation-type-type type))))
 
 ;;; REAL BOOLEAN ALGEBRA SHIT UP NOW
 
@@ -160,7 +144,7 @@
 		 (combination-type-components t1))))
 
 ;; dunno what this identity's called if anything but it's easy to prove
-;; A&~(A|B) = A&~A&B = 0
+;; A&~(A|B) = A&~A&~B = 0
 ;; also takes care of A&~A
 (defmethod-commutative conjoin/2 ((t1 negation-type) t2)
   (if (subtypep t2 (negation-type-type t1))

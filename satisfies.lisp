@@ -16,13 +16,3 @@
 	   (satisfies-type-predicate-name t2))
       (values t t)
       (values nil nil)))
-
-(setf (specifier-special 'satisfies nil)
-      (lambda (spec env)
-	(declare (ignore env))
-	(destructuring-bind (predicate) (rest spec)
-	  (check-type predicate symbol)
-	  (make-instance 'satisfies-type :pred predicate))))
-
-(defmethod unparse ((type satisfies-type))
-  (list 'satisfies (satisfies-type-predicate-name type)))

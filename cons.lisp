@@ -36,18 +36,3 @@
 			  (cons-type-cdr type))
 	       (type-cons (cons-type-car type)
 			  (negate (cons-type-cdr type))))))
-
-(deftype-function cons (&optional car cdr)
-  (type-cons (or car *the-type-t*) (or cdr *the-type-t*)))
-
-(deftype-symbol-macro cons (cons t t))
-(deftype-symbol-macro atom (not cons))
-(deftype-symbol-macro list (or cons null))
-
-(defmethod unparse ((type cons-type))
-  (with-slots (car cdr) type
-    (let ((car (unparse car))
-	  (cdr (unparse cdr)))
-      (cond ((not (eq cdr t)) (list 'cons car cdr))
-	    ((not (eq car t)) (list 'cons car))
-	    (t 'cons)))))

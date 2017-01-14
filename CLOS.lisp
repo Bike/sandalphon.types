@@ -9,5 +9,3 @@
 
 (defmethod subtypep tri/combine ((t1 class) (t2 class))
   (cl:subtypep t1 t2))
-
-(defmethod unparse ((type class)) (class-name type))

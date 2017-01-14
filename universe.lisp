@@ -35,9 +35,3 @@
 ;; defconstant? something?
 (defparameter *the-type-t* (make-instance 'top-type))
 (defparameter *the-type-nil* (make-instance 'bottom-type))
-
-(deftype-variable t *the-type-t*)
-(deftype-variable nil *the-type-nil*)
-
-(defmethod unparse ((type top-type)) 't)
-(defmethod unparse ((type bottom-type)) 'nil)

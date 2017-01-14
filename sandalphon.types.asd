@@ -5,39 +5,29 @@
   :version "0.1"
   :depends-on (#:alexandria)
   :components ((:file "package")
-	       (:file "parse" :depends-on ("generics" "package"))
-	       (:file "unparse" :depends-on ("generics" "package"))
 	       (:file "trivalent" :depends-on ("package"))
 	       (:file "generics"
-		      :depends-on ("trivalent" "package"))
+		:depends-on ("trivalent" "package"))
 	       (:file "CLOS"
-		      :depends-on ("generics" "package"))
+		:depends-on ("generics" "package"))
 	       (:file "universe"
-		      :depends-on ("generics" "parse" "unparse"
-					      "package"))
+		:depends-on ("generics" "package"))
 	       (:file "array"
-		      :depends-on ("generics" "parse" "unparse"
-					      "package"))
+		:depends-on ("generics" "package"))
 	       (:file "cons"
-		      :depends-on ("generics" "universe"
-					      "parse" "unparse"
-					      "package"))
+		:depends-on ("generics" "universe"
+					"package"))
 	       (:file "real"
-		      :depends-on ("generics" "universe"
-				   "eql-member" "package"))
+		:depends-on ("generics" "universe"
+					"eql-member" "package"))
 	       (:file "eql-member"
-		      :depends-on ("universe"
-				   "generics" "parse" "unparse"
-				   "package"))
+		:depends-on ("universe" "generics" "package"))
 	       (:file "satisfies"
-		      :depends-on ("generics" "parse" "unparse"
-					      "package"))
+		:depends-on ("generics" "package"))
 	       (:file "logical"
-		      :depends-on ("generics" "universe"
-					      "parse" "unparse"
-					      "package"))
+		:depends-on ("generics" "universe" "package"))
 	       (:file "interrelate"
-		      :depends-on ("generics" "cons" "real"
-					      "eql-member"
-					      "universe" "array"
-					      "trivalent" "package"))))
+		:depends-on ("generics" "cons" "real"
+					"eql-member"
+					"universe" "array"
+					"trivalent" "package"))))

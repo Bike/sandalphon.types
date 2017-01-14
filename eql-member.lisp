@@ -43,17 +43,6 @@
       ;; better safe than sorry
       (call-next-method)))
 
-(setf (assoc-value *global-type-environment-specials* 'eql)
-      (lambda (spec env)
-	(declare (ignore env))
-	(if (rest spec)
-	    (make-instance 'member-type :objs (rest spec))
-	    *the-type-nil*)))
-(deftype-symbol-macro null (eql nil))
-
-(defmethod unparse ((type member-type))
-  (list* 'member (member-type-objects type)))
-
 ;; for some convenience... we'll see if this lasts.
 (defclass eql-type (type)
   ((object :initarg :obj :accessor eql-type-object)))
@@ -81,12 +70,3 @@
   (if (typep (eql-type-object t1) t2)
       t1
       *the-type-nil*))
-
-(setf (assoc-value *global-type-environment-specials* 'eql)
-      (lambda (spec env)
-	(declare (ignore env))
-	(destructuring-bind (item) (rest spec)
-	  (make-instance 'eql-type :obj item))))
-
-(defmethod unparse ((type eql-type))
-  (list 'eql (eql-type-object type)))
